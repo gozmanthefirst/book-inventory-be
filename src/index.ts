@@ -7,42 +7,58 @@ import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 
 // Local Imports
+import { authenticate } from "@/middlewares/authenticate.js";
 import { errorHandler } from "@/middlewares/error-handler.js";
 import { notFoundRoute } from "@/middlewares/not-found-route.js";
+import authorsRouter from "@/routes/authors-route.js";
 import booksRouter from "@/routes/books-route.js";
-import authorsRouter from "./routes/authors-route.js";
-import genresRouter from "./routes/genres-route.js";
+import genresRouter from "@/routes/genres-route.js";
+import { auth } from "@/services/auth.js";
 
 dotenv.config();
 
-const app = new Hono({ strict: false });
+// Initialize app
+const app = new Hono<{
+  Variables: {
+    user: typeof auth.$Infer.Session.user | null;
+    session: typeof auth.$Infer.Session.session | null;
+  };
+}>({ strict: false });
 
-// CORS Middleware
+// Enable CORS
 app.use(
-  "/api/*",
+  "*",
   cors({
-    origin: ["https://books.gozman.dev", "http:localhost:3000"],
+    origin: ["https://books.gozman.dev", "http://localhost:3000"],
+    allowHeaders: ["Content-Type", "Authorization"],
+    allowMethods: ["GET", "PUT", "POST", "DELETE", "PATCH", "OPTIONS"],
+    exposeHeaders: ["Content-Length"],
     credentials: true,
+    maxAge: 3600,
   }),
 );
 
-// Compression Middleware
+// Enable compression and route logging
 app.use(compress());
-
-// Logger Middleware
 app.use(logger());
 
-// Testing API
-app.get("/", (c) => {
-  return c.text("API is up and running!");
-});
+// Healthcheck
+app.get("/", (c) => c.text("API is up and running!"));
 
-// Routes
+// Setup Better Auth
+app.on(["POST", "GET"], "/api/v1/auth/**", (c) => auth.handler(c.req.raw));
+
+//! Unprotected routes go here!
+
+// Enable auth protection
+app.use(authenticate);
+
+// Protected Routes
 app.route("/api/v1/books", booksRouter);
 app.route("/api/v1/authors", authorsRouter);
 app.route("/api/v1/genres", genresRouter);
 
-// Not Found Routes and Error Handler Middleware
+// Not Found & Error Handling Middleware
 app.notFound(notFoundRoute);
 app.onError(errorHandler);
 
