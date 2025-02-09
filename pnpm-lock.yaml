@@ -11,6 +11,9 @@ importers:
       '@hono/node-server':
         specifier: ^1.13.8
         version: 1.13.8(hono@4.7.0)
+      '@prisma/client':
+        specifier: ^6.3.1
+        version: 6.3.1
       dotenv:
         specifier: ^16.4.7
         version: 16.4.7
@@ -186,6 +189,18 @@ packages:
     peerDependencies:
       hono: ^4
 
+  '@prisma/client@6.3.1':
+    resolution: {integrity: sha512-ARAJaPs+eBkemdky/XU3cvGRl+mIPHCN2lCXsl5Vlb0E2gV+R6IN7aCI8CisRGszEZondwIsW9Iz8EJkTdykyA==}
+    engines: {node: '>=18.18'}
+    peerDependencies:
+      prisma: '*'
+      typescript: '>=5.1.0'
+    peerDependenciesMeta:
+      prisma:
+        optional: true
+      typescript:
+        optional: true
+
   '@types/node@20.17.17':
     resolution: {integrity: sha512-/WndGO4kIfMicEQLTi/mDANUu/iVUhT7KboZPdEqqHQ4aTS+3qT3U5gIqWDFV+XouorjfgGqvKILJeHhuQgFYg==}
 
@@ -310,6 +325,8 @@ snapshots:
   '@hono/node-server@1.13.8(hono@4.7.0)':
     dependencies:
       hono: 4.7.0
+
+  '@prisma/client@6.3.1': {}
 
   '@types/node@20.17.17':
     dependencies:

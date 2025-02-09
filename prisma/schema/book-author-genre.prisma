@@ -1,0 +1,37 @@
+model Book {
+  id            String    @id @default(cuid())
+  title         String
+  subtitle      String?
+  bookDesc      String?
+  imageUrl      String?
+  isbn          String?   @unique
+  publisher     String?
+  publishedDate DateTime?
+  pageCount     Int
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @default(now()) @updatedAt
+  authors       Author[]
+  genres        Genre[]
+
+  @@map("books")
+}
+
+model Author {
+  id         String   @id @default(cuid())
+  authorName String   @unique
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+  books      Book[]
+
+  @@map("authors")
+}
+
+model Genre {
+  id        String   @id @default(cuid())
+  genreName String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  books     Book[]
+
+  @@map("genres")
+}
