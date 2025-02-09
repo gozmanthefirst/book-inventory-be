@@ -34,7 +34,7 @@ app.use(logger());
 
 // Testing API
 app.get("/", (c) => {
-  return c.text("API is running successfully!");
+  return c.text("API is up and running!");
 });
 
 // Routes
