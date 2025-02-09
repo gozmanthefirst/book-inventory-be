@@ -12,6 +12,8 @@ model Book {
   updatedAt     DateTime  @default(now()) @updatedAt
   authors       Author[]
   genres        Genre[]
+  userId        String?
+  user          User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("books")
 }
