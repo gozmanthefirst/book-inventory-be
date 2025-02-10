@@ -8,7 +8,7 @@ RUN apk add --no-cache gcompat
 WORKDIR /app
 
 # Copy only the files needed for installation
-COPY pnpm-lock.yaml package.json tsconfig.json src ./
+COPY pnpm-lock.yaml package.json tsconfig.json src .env ./
 
 # Copy the Prisma directory to allow for `pnpm dlx prisma generate`
 COPY prisma ./prisma
@@ -31,6 +31,10 @@ RUN adduser --system --uid 1001 hono
 COPY --from=builder --chown=hono:nodejs /app/node_modules /app/node_modules
 COPY --from=builder --chown=hono:nodejs /app/dist /app/dist
 COPY --from=builder --chown=hono:nodejs /app/package.json /app/package.json
+COPY --from=build /app/.env /app/.env
+
+# Set the environment variable
+ENV NODE_ENV=production
 
 # Use non-root user
 USER hono
