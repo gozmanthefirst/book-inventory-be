@@ -7,13 +7,13 @@ import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 
 // Local Imports
-import { authenticate } from "@/middlewares/authenticate.js";
-import { errorHandler } from "@/middlewares/error-handler.js";
-import { notFoundRoute } from "@/middlewares/not-found-route.js";
-import authorsRouter from "@/routes/authors-route.js";
-import booksRouter from "@/routes/books-route.js";
-import genresRouter from "@/routes/genres-route.js";
-import { auth } from "@/services/auth.js";
+import { authenticate } from "./middlewares/authenticate.js";
+import { errorHandler } from "./middlewares/error-handler.js";
+import { notFoundRoute } from "./middlewares/not-found-route.js";
+import authorsRouter from "./routes/authors-route.js";
+import booksRouter from "./routes/books-route.js";
+import genresRouter from "./routes/genres-route.js";
+import { auth } from "./services/auth.js";
 
 dotenv.config();
 

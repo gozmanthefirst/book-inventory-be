@@ -3,8 +3,8 @@ import type { Handler } from "hono";
 import { StatusCodes } from "http-status-codes";
 
 // Local Imports
-import { getAllAuthorsQ } from "@/lib/db/authors.js";
-import { errorResponse, successResponse } from "@/lib/utils/api-response.js";
+import { getAllAuthorsQ } from "../lib/db/authors.js";
+import { errorResponse, successResponse } from "../lib/utils/api-response.js";
 
 export const getAllAuthors: Handler = async (c) => {
   try {

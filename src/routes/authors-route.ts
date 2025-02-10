@@ -2,7 +2,7 @@
 import { Hono } from "hono";
 
 // Local Imports
-import { getAllAuthors } from "@/handlers/authors-handler.js";
+import { getAllAuthors } from "../handlers/authors-handler.js";
 
 const authorsRouter = new Hono({ strict: false });
 

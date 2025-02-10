@@ -7,7 +7,7 @@ import {
   deleteSingleBook,
   getAllBooks,
   getSingleBook,
-} from "@/handlers/books-handler.js";
+} from "../handlers/books-handler.js";
 
 const booksRouter = new Hono({ strict: false });
 

@@ -2,7 +2,7 @@
 import { Hono } from "hono";
 
 // Local Imports
-import { getAllGenres } from "@/handlers/genres-handler.js";
+import { getAllGenres } from "../handlers/genres-handler.js";
 
 const genresRouter = new Hono({ strict: false });
 
