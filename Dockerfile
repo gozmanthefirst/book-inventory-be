@@ -34,7 +34,9 @@ COPY --from=builder --chown=hono:nodejs /app/package.json /app/package.json
 COPY --from=builder /app/.env /app/.env
 
 # Set the environment variable
-ENV NODE_ENV=production
+ENV NODE_ENV=production \
+    HOSTNAME="0.0.0.0" \
+    PORT=8000
 
 # Use non-root user
 USER hono
