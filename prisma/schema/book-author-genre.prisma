@@ -4,16 +4,16 @@ model Book {
   subtitle      String?
   bookDesc      String?
   imageUrl      String?
-  isbn          String?   @unique
+  isbn          String?
   publisher     String?
   publishedDate DateTime?
   pageCount     Int
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @default(now()) @updatedAt
-  authors       Author[]
-  genres        Genre[]
   userId        String?
   user          User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  authors       Author[]  @relation("AuthorToBook")
+  genres        Genre[]   @relation("BookToGenre")
 
   @@map("books")
 }
@@ -23,7 +23,7 @@ model Author {
   authorName String   @unique
   createdAt  DateTime @default(now())
   updatedAt  DateTime @default(now()) @updatedAt
-  books      Book[]
+  books      Book[]   @relation("AuthorToBook")
 
   @@map("authors")
 }
@@ -33,7 +33,7 @@ model Genre {
   genreName String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
-  books     Book[]
+  books     Book[]   @relation("BookToGenre")
 
   @@map("genres")
 }
