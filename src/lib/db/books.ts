@@ -11,7 +11,20 @@ export const getAllBooksQ = async () => {
   return books;
 };
 
-export const createNewBookQ = async ({
+export const getAllBooksForUserQ = async (userId: string) => {
+  const books = await db.book.findMany({
+    where: {
+      userId,
+    },
+    include: {
+      authors: true,
+      genres: true,
+    },
+  });
+  return books;
+};
+
+export const createNewBookForUserQ = async ({
   title,
   subtitle,
   bookDesc,
@@ -22,6 +35,7 @@ export const createNewBookQ = async ({
   pageCount,
   authors,
   genres,
+  userId,
 }: {
   title: string;
   subtitle?: string;
@@ -33,6 +47,7 @@ export const createNewBookQ = async ({
   pageCount: number;
   authors: string[];
   genres: string[];
+  userId: string;
 }) => {
   await db.book.create({
     data: {
@@ -44,6 +59,7 @@ export const createNewBookQ = async ({
       publisher,
       publishedDate,
       pageCount,
+      userId,
       authors: {
         connectOrCreate: authors.map((name) => ({
           where: { authorName: name },
@@ -60,10 +76,10 @@ export const createNewBookQ = async ({
   });
 };
 
-export const getBookByIdQ = async (id: string) => {
+export const getBookByIdQ = async (booKId: string) => {
   const book = await db.book.findUnique({
     where: {
-      id,
+      id: booKId,
     },
     include: {
       authors: true,
@@ -73,10 +89,25 @@ export const getBookByIdQ = async (id: string) => {
   return book;
 };
 
-export const getBookByIsbnQ = async (isbn: string) => {
+export const getBookByIdForUserQ = async (bookId: string, userId: string) => {
   const book = await db.book.findUnique({
     where: {
+      id: bookId,
+      userId,
+    },
+    include: {
+      authors: true,
+      genres: true,
+    },
+  });
+  return book;
+};
+
+export const getBookByIsbnForUserQ = async (isbn: string, userId: string) => {
+  const book = await db.book.findFirst({
+    where: {
       isbn,
+      userId,
     },
     include: {
       authors: true,
@@ -90,6 +121,18 @@ export const deleteBookByIdQ = async (id: string) => {
   await db.book.delete({
     where: {
       id,
+    },
+  });
+};
+
+export const deleteBookByIdForUserQ = async (
+  bookId: string,
+  userId: string,
+) => {
+  await db.book.delete({
+    where: {
+      id: bookId,
+      userId,
     },
   });
 };
