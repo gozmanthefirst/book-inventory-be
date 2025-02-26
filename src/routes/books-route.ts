@@ -14,7 +14,7 @@ import { deleteSingleBook, getAllBooks } from "../handlers/books-handler.js";
 const booksRouter = new Hono({ strict: false });
 
 // Get all books - GET {/api/v1/books}/
-booksRouter.get("/", getAllBooks);
+// booksRouter.get("/", getAllBooks);
 
 // Get single book - GET {/api/v1/books}/:bookId
 booksRouter.get("/:bookId", getSingleBook);
