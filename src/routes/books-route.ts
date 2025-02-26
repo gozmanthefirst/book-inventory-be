@@ -4,12 +4,12 @@ import { Hono } from "hono";
 // Local Imports
 import {
   createNewBookForUser,
+  deleteSingleBook,
   deleteSingleBookForUser,
   getAllBooksForUser,
   getSingleBook,
   getSingleBookForUser,
-} from "../handlers/books-handler";
-import { deleteSingleBook, getAllBooks } from "../handlers/books-handler.js";
+} from "../handlers/books-handler.js";
 
 const booksRouter = new Hono({ strict: false });
 
