@@ -5,19 +5,17 @@ import { StatusCodes } from "http-status-codes";
 // Local Imports
 import { deleteOrphanedAuthors } from "../lib/db/authors.js";
 import {
-  deleteBookByIdForUserQ,
-  getAllBooksForUserQ,
-  getBookByIdForUserQ,
-} from "../lib/db/books";
-import {
   createNewBookForUserQ,
+  deleteBookByIdForUserQ,
   deleteBookByIdQ,
+  getAllBooksForUserQ,
   getAllBooksQ,
+  getBookByIdForUserQ,
   getBookByIdQ,
   getBookByIsbnForUserQ,
 } from "../lib/db/books.js";
 import { deleteOrphanedGenres } from "../lib/db/genres.js";
-import { getUserByIdQ } from "../lib/db/user";
+import { getUserByIdQ } from "../lib/db/user.js";
 import { errorResponse, successResponse } from "../lib/utils/api-response.js";
 import { isValidPastDate } from "../lib/utils/datetime.js";
 import { removeDashesAndSpaces } from "../lib/utils/string.js";
