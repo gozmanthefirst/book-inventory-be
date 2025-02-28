@@ -17,10 +17,10 @@ const booksRouter = new Hono({ strict: false });
 // booksRouter.get("/", getAllBooks);
 
 // Get single book - GET {/api/v1/books}/:bookId
-booksRouter.get("/:bookId", getSingleBook);
+// booksRouter.get("/:bookId", getSingleBook);
 
 // Delete single book - DELETE {/api/v1/books}/:bookId
-booksRouter.delete("/:bookId", deleteSingleBook);
+// booksRouter.delete("/:bookId", deleteSingleBook);
 
 // Get all books for user - GET {/api/v1/books}/user/:userId
 booksRouter.get("/user/:userId", getAllBooksForUser);
