@@ -4,10 +4,8 @@ import { Hono } from "hono";
 // Local Imports
 import {
   createNewBookForUser,
-  deleteSingleBook,
   deleteSingleBookForUser,
   getAllBooksForUser,
-  getSingleBook,
   getSingleBookForUser,
 } from "../handlers/books-handler.js";
 

@@ -157,6 +157,7 @@ export const createNewBookForUser: Handler = async (c) => {
       publisher,
       publishedDate,
       pageCount,
+      readStatus,
       authors,
       genres,
     } = await c.req.json();
@@ -168,6 +169,7 @@ export const createNewBookForUser: Handler = async (c) => {
       { name: "Page Count", value: pageCount },
       { name: "Author(s)", value: authors },
       { name: "Genre(s)", value: genres },
+      { name: "Read Status", value: readStatus },
     ];
 
     for (const field of requiredFields) {
@@ -253,6 +255,17 @@ export const createNewBookForUser: Handler = async (c) => {
     if (isNaN(Number(pageCount)) || Number(pageCount) <= 0) {
       return c.json(
         errorResponse("INVALID_DATA", ["Invalid page count."]),
+        StatusCodes.BAD_REQUEST,
+      );
+    }
+
+    //! Read Status
+    if (
+      typeof readStatus !== "string" ||
+      !["unread", "read", "reading"].includes(readStatus.toLowerCase())
+    ) {
+      return c.json(
+        errorResponse("INVALID_DATA", ["Invalid read status."]),
         StatusCodes.BAD_REQUEST,
       );
     }
@@ -347,6 +360,7 @@ export const createNewBookForUser: Handler = async (c) => {
       publisher,
       publishedDate: finalPubDate,
       pageCount,
+      readStatus,
       authors,
       genres,
       userId,

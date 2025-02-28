@@ -1,3 +1,6 @@
+// External Imports
+import type { ReadStatus } from "@prisma/client";
+
 // Local Imports
 import db from "./prisma.js";
 
@@ -33,6 +36,7 @@ export const createNewBookForUserQ = async ({
   publisher,
   publishedDate,
   pageCount,
+  readStatus,
   authors,
   genres,
   userId,
@@ -45,6 +49,7 @@ export const createNewBookForUserQ = async ({
   publisher?: string;
   publishedDate?: Date;
   pageCount: number;
+  readStatus: string;
   authors: string[];
   genres: string[];
   userId: string;
@@ -59,6 +64,7 @@ export const createNewBookForUserQ = async ({
       publisher,
       publishedDate,
       pageCount,
+      readStatus: (readStatus.toUpperCase() || "UNREAD") as ReadStatus,
       userId,
       authors: {
         connectOrCreate: authors.map((name) => ({
