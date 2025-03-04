@@ -7,6 +7,7 @@ import {
   deleteSingleBookForUser,
   getAllBooksForUser,
   getSingleBookForUser,
+  updateBookReadStatusForUser,
 } from "../handlers/books-handler.js";
 
 const booksRouter = new Hono({ strict: false });
@@ -28,6 +29,9 @@ booksRouter.post("/user/:userId", createNewBookForUser);
 
 // Get single book for user - GET {/api/v1/books}/user/:userId/:bookId
 booksRouter.get("/user/:userId/:bookId", getSingleBookForUser);
+
+// Update single book for user - PATCH {/api/v1/books}/user/:userId/:bookId
+booksRouter.patch("/user/:userId/:bookId", updateBookReadStatusForUser);
 
 // Delete single book for user - DELETE {/api/v1/books}/user/:userId/:bookId
 booksRouter.delete("/user/:userId/:bookId", deleteSingleBookForUser);

@@ -13,6 +13,7 @@ import {
   getBookByIdForUserQ,
   getBookByIdQ,
   getBookByIsbnForUserQ,
+  updateBookReadStatusForUserQ,
 } from "../lib/db/books.js";
 import { deleteOrphanedGenres } from "../lib/db/genres.js";
 import { getUserByIdQ } from "../lib/db/user.js";
@@ -416,6 +417,67 @@ export const getSingleBookForUser: Handler = async (c) => {
         "INTERNAL_SERVER_ERROR",
         "Error retrieving books for user.",
       ),
+      StatusCodes.INTERNAL_SERVER_ERROR,
+    );
+  }
+};
+
+//* Update single book for user
+export const updateBookReadStatusForUser: Handler = async (c) => {
+  try {
+    const userId = c.req.param("userId");
+    const bookId = c.req.param("bookId");
+
+    const user = await getUserByIdQ(userId);
+
+    // Return an error if the user was not found
+    if (!user) {
+      return c.json(
+        errorResponse("NOT_FOUND", ["User not found."]),
+        StatusCodes.NOT_FOUND,
+      );
+    }
+
+    const book = await getBookByIdQ(bookId);
+
+    // Return an error if the book was not found
+    if (!book) {
+      return c.json(
+        errorResponse("NOT_FOUND", ["Book not found."]),
+        StatusCodes.NOT_FOUND,
+      );
+    }
+
+    const { readStatus } = await c.req.json();
+
+    //! Required Fields
+    // Check if values exist for the required fields
+    const requiredFields = [{ name: "Read Status", value: readStatus }];
+
+    for (const field of requiredFields) {
+      if (!field.value) {
+        return c.json(
+          errorResponse("INVALID_DATA", [`${field.name} is required.`]),
+          StatusCodes.BAD_REQUEST,
+        );
+      }
+    }
+
+    // Update book
+    await updateBookReadStatusForUserQ(book.id, user.id, readStatus);
+
+    // Delete authors and genres if they no longer have a connected book
+    await deleteOrphanedAuthors();
+    await deleteOrphanedGenres();
+
+    return c.json(
+      successResponse("User's book successfully updated."),
+      StatusCodes.OK,
+    );
+  } catch (error) {
+    console.error("Error updating user's book:", error);
+    return c.json(
+      errorResponse("INTERNAL_SERVER_ERROR", "Error updating user's book."),
       StatusCodes.INTERNAL_SERVER_ERROR,
     );
   }

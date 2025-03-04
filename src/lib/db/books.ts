@@ -131,6 +131,22 @@ export const deleteBookByIdQ = async (id: string) => {
   });
 };
 
+export const updateBookReadStatusForUserQ = async (
+  bookId: string,
+  userId: string,
+  readStatus: string,
+) => {
+  await db.book.update({
+    where: {
+      id: bookId,
+      userId,
+    },
+    data: {
+      readStatus: (readStatus.toUpperCase() || "UNREAD") as ReadStatus,
+    },
+  });
+};
+
 export const deleteBookByIdForUserQ = async (
   bookId: string,
   userId: string,
