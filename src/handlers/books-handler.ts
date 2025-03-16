@@ -237,7 +237,7 @@ export const createNewBookForUser: Handler = async (c) => {
           "ISBN_ALREADY_EXIST",
           "Book with this ISBN already exists.",
         ),
-        StatusCodes.BAD_REQUEST,
+        StatusCodes.CONFLICT,
       );
     }
 
