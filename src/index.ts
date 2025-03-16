@@ -23,6 +23,7 @@ app.use(
   "*",
   cors({
     origin: ["https://books.gozman.dev", "http://localhost:3000"],
+    credentials: true,
     maxAge: 3600,
   }),
 );
