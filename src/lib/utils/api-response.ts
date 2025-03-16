@@ -43,17 +43,17 @@ export const successResponse = (details: string, data?: any) => {
  * @returns {Object} An object containing the status, code, details, and optionally data.
  *
  * @example
- * errorResponse("400", "Invalid input");
+ * errorResponse("INTERNAL_SERVER_ERROR", "Invalid input");
  * // {
  * //   status: "error",
- * //   code: "400",
- * //   details: "Invalid input"
+ * //   code: "INTERNAL_SERVER_ERROR",
+ * //   details: "Somethign went wrong"
  * // }
  *
- * errorResponse("400", ["Invalid input", "Missing fields"], { field: "email" });
+ * errorResponse("INVALID_DATA", ["Invalid input", "Missing fields"], { field: "email" });
  * // {
  * //   status: "error",
- * //   code: "400",
+ * //   code: "INVALID_DATA",
  * //   details: ["Invalid input", "Missing fields"],
  * //   data: { field: "email" }
  * // }
@@ -61,7 +61,7 @@ export const successResponse = (details: string, data?: any) => {
 export const errorResponse = (
   code: string,
   details: string | string[],
-  data?: any
+  data?: any,
 ) => {
   if (data) {
     return {
