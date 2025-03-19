@@ -6,5 +6,24 @@
   "singleQuote": false,
   "bracketSameLine": false,
   "arrowParens": "always",
-  "endOfLine": "lf"
+  "endOfLine": "lf",
+  "plugins": [
+    "@ianvs/prettier-plugin-sort-imports"
+  ],
+  "importOrder": [
+    "",
+    "<BUILTIN_MODULES>",
+    "",
+    "^(hono/(.*)$)|^(hono$)",
+    "<THIRD_PARTY_MODULES>",
+    "",
+    "^@/.*$",
+    "^[.].*$"
+  ],
+  "importOrderSeparation": false,
+  "importOrderSortSpecifiers": true,
+  "importOrderBuiltinModulesToTop": true,
+  "importOrderMergeDuplicateImports": true,
+  "importOrderCombineTypeAndValueImports": true,
+  "importOrderParserPlugins": ["typescript", "jsx", "decorators-legacy"]
 }
