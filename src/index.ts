@@ -1,14 +1,15 @@
 // External Imports
-import { serve } from "@hono/node-server";
-import dotenv from "dotenv";
+
 import { Hono } from "hono";
 import { compress } from "hono/compress";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
+import { serve } from "@hono/node-server";
+import dotenv from "dotenv";
 
 // Local Imports
-import { errorHandler } from "./middlewares/error-handler.js";
-import { notFoundRoute } from "./middlewares/not-found-route.js";
+import { errorHandler } from "./middleware/error-handler.js";
+import { notFoundRoute } from "./middleware/not-found-route.js";
 import authorsRouter from "./routes/authors-route.js";
 import booksRouter from "./routes/books-route.js";
 import genresRouter from "./routes/genres-route.js";

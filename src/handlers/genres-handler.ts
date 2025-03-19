@@ -1,10 +1,11 @@
 // External Imports
+
 import type { Handler } from "hono";
 import { StatusCodes } from "http-status-codes";
 
 // Local Imports
-import { getAllGenresQ } from "../lib/db/genres.js";
-import { errorResponse, successResponse } from "../lib/utils/api-response.js";
+import { getAllGenresQ } from "../lib/genres.js";
+import { errorResponse, successResponse } from "../utils/api-response.js";
 
 export const getAllGenres: Handler = async (c) => {
   try {

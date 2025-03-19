@@ -1,9 +1,10 @@
 // External Imports
+
 import type { Handler } from "hono";
 import { StatusCodes } from "http-status-codes";
 
 // Local Imports
-import { deleteOrphanedAuthors } from "../lib/db/authors.js";
+import { deleteOrphanedAuthors } from "../lib/authors.js";
 import {
   createNewBookForUserQ,
   deleteBookByIdForUserQ,
@@ -14,12 +15,12 @@ import {
   getBookByIdQ,
   getBookByIsbnForUserQ,
   updateBookReadStatusForUserQ,
-} from "../lib/db/books.js";
-import { deleteOrphanedGenres } from "../lib/db/genres.js";
-import { getUserByIdQ } from "../lib/db/user.js";
-import { errorResponse, successResponse } from "../lib/utils/api-response.js";
-import { isValidPastDate } from "../lib/utils/datetime.js";
-import { removeDashesAndSpaces } from "../lib/utils/string.js";
+} from "../lib/books.js";
+import { deleteOrphanedGenres } from "../lib/genres.js";
+import { getUserByIdQ } from "../lib/user.js";
+import { errorResponse, successResponse } from "../utils/api-response.js";
+import { isValidPastDate } from "../utils/datetime.js";
+import { removeDashesAndSpaces } from "../utils/string.js";
 
 //* Get all books
 export const getAllBooks: Handler = async (c) => {
