@@ -21,8 +21,6 @@ model Book {
   user          User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
   authors       Author[]   @relation("AuthorToBook")
   genres        Genre[]    @relation("BookToGenre")
-
-  @@map("book")
 }
 
 model Author {
@@ -31,8 +29,6 @@ model Author {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @default(now()) @updatedAt
   books      Book[]   @relation("AuthorToBook")
-
-  @@map("author")
 }
 
 model Genre {
@@ -41,6 +37,4 @@ model Genre {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
   books     Book[]   @relation("BookToGenre")
-
-  @@map("genre")
 }
