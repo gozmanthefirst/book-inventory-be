@@ -1,5 +1,3 @@
-// Local Imports
-
 import db from "../config/prisma.js";
 
 export const getUserByIdQ = async (id: string) => {

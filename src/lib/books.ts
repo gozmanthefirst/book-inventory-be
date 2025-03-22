@@ -1,8 +1,5 @@
-// External Imports
-
 import type { ReadStatus } from "@prisma/client";
 
-// Local Imports
 import db from "../config/prisma.js";
 
 export const getAllBooksQ = async () => {
