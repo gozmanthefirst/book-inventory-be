@@ -1,39 +1,205 @@
-// External Imports
 import { Hono } from "hono";
+import { StatusCodes } from "http-status-codes";
 
-// Local Imports
+import { deleteOrphanedAuthors } from "../lib/authors.js";
 import {
-  createNewBookForUser,
-  deleteSingleBookForUser,
-  getAllBooksForUser,
-  getSingleBookForUser,
-  updateBookReadStatusForUser,
-} from "../handlers/books-handler.js";
+  createNewBookForUserQ,
+  deleteBookByIdForUserQ,
+  getAllBooksForUserQ,
+  getBookByIdForUserQ,
+  getBookByIdQ,
+  getBookByIsbnForUserQ,
+  updateBookReadStatusForUserQ,
+} from "../lib/books.js";
+import { deleteOrphanedGenres } from "../lib/genres.js";
+import { zv } from "../middleware/validator.js";
+import { errorResponse, successResponse } from "../utils/api-response.js";
+import {
+  createBookSchema,
+  updateBookSchema,
+} from "../validators/books-validator.js";
 
-const booksRouter = new Hono({ strict: false });
+const books = new Hono({ strict: false });
 
-// Get all books - GET {/api/v1/books}/
-// booksRouter.get("/", getAllBooks);
+//* Get all books for a user
+//* GET /books
+books.get("/", async (c) => {
+  try {
+    const user = c.get("user");
+    const books = await getAllBooksForUserQ(user.id);
 
-// Get single book - GET {/api/v1/books}/:bookId
-// booksRouter.get("/:bookId", getSingleBook);
+    return c.json(
+      successResponse("User's books successfully retrieved.", books),
+      StatusCodes.OK,
+    );
+  } catch (error) {
+    console.error("Error retrieving books for user:", error);
+    return c.json(
+      errorResponse(
+        "INTERNAL_SERVER_ERROR",
+        "Error retrieving books for user.",
+      ),
+      StatusCodes.INTERNAL_SERVER_ERROR,
+    );
+  }
+});
 
-// Delete single book - DELETE {/api/v1/books}/:bookId
-// booksRouter.delete("/:bookId", deleteSingleBook);
+//* Create book for user
+//* POST /books
+books.post("/", zv("json", createBookSchema), async (c) => {
+  try {
+    const user = c.get("user");
+    const bookData = c.req.valid("json");
 
-// Get all books for user - GET {/api/v1/books}/user/:userId
-booksRouter.get("/user/:userId", getAllBooksForUser);
+    // Check if a book already has that ISBN
+    const modifiedIsbn = bookData.isbn.replace(/[-\s]/g, "");
+    const existingIsbn = await getBookByIsbnForUserQ(modifiedIsbn, user.id);
 
-// Create book for user - POST {/api/v1/books}/user/:userId
-booksRouter.post("/user/:userId", createNewBookForUser);
+    if (existingIsbn) {
+      return c.json(
+        errorResponse(
+          "ISBN_ALREADY_EXIST",
+          "Book with this ISBN already exists.",
+        ),
+        StatusCodes.CONFLICT,
+      );
+    }
 
-// Get single book for user - GET {/api/v1/books}/user/:userId/:bookId
-booksRouter.get("/user/:userId/:bookId", getSingleBookForUser);
+    // Optional fields
+    const finalSubtitle = bookData.subtitle ?? "";
+    const finalBookDesc = bookData.bookDesc ?? "";
+    const finalImageUrl = bookData.imageUrl ?? "";
+    const finalPubDate = new Date(bookData.publishedDate);
 
-// Update single book for user - PATCH {/api/v1/books}/user/:userId/:bookId
-booksRouter.patch("/user/:userId/:bookId", updateBookReadStatusForUser);
+    await createNewBookForUserQ({
+      ...bookData,
+      subtitle: finalSubtitle,
+      bookDesc: finalBookDesc,
+      imageUrl: finalImageUrl,
+      publishedDate: finalPubDate,
+      isbn: modifiedIsbn,
+      userId: user.id,
+    });
 
-// Delete single book for user - DELETE {/api/v1/books}/user/:userId/:bookId
-booksRouter.delete("/user/:userId/:bookId", deleteSingleBookForUser);
+    return c.json(
+      successResponse("User's book successfully created."),
+      StatusCodes.CREATED,
+    );
+  } catch (error) {
+    console.error("Error creating book for user:", error);
+    return c.json(
+      errorResponse("INTERNAL_SERVER_ERROR", "Error creating book for user."),
+      StatusCodes.INTERNAL_SERVER_ERROR,
+    );
+  }
+});
 
-export default booksRouter;
+//* Get a single book for user
+//* GET /books/:bookId
+books.get("/:bookId", async (c) => {
+  try {
+    const user = c.get("user");
+    const bookId = c.req.param("bookId");
+
+    const book = await getBookByIdForUserQ(bookId, user.id);
+
+    // Return an error if the book was not found
+    if (!book) {
+      return c.json(
+        errorResponse("NOT_FOUND", "Book not found."),
+        StatusCodes.NOT_FOUND,
+      );
+    }
+
+    return c.json(
+      successResponse("User's book successfully retrieved.", book),
+      StatusCodes.OK,
+    );
+  } catch (error) {
+    console.error("Error retrieving books for user:", error);
+    return c.json(
+      errorResponse(
+        "INTERNAL_SERVER_ERROR",
+        "Error retrieving books for user.",
+      ),
+      StatusCodes.INTERNAL_SERVER_ERROR,
+    );
+  }
+});
+
+//* Update book for user
+//* PATCH /books/:bookId
+books.patch("/:bookId", zv("json", updateBookSchema), async (c) => {
+  try {
+    const user = c.get("user");
+    const bookId = c.req.param("bookId");
+    const { readStatus } = c.req.valid("json");
+
+    const book = await getBookByIdQ(bookId);
+
+    // Return an error if the book was not found
+    if (!book) {
+      return c.json(
+        errorResponse("NOT_FOUND", "Book not found."),
+        StatusCodes.NOT_FOUND,
+      );
+    }
+
+    // Update book
+    await updateBookReadStatusForUserQ(book.id, user.id, readStatus);
+
+    // Delete authors and genres if they no longer have a connected book
+    await deleteOrphanedAuthors();
+    await deleteOrphanedGenres();
+
+    return c.json(
+      successResponse("User's book successfully updated."),
+      StatusCodes.OK,
+    );
+  } catch (error) {
+    console.error("Error updating user's book:", error);
+    return c.json(
+      errorResponse("INTERNAL_SERVER_ERROR", "Error updating user's book."),
+      StatusCodes.INTERNAL_SERVER_ERROR,
+    );
+  }
+});
+
+//* Delete book for user
+//* DELETE /books/:bookId
+books.delete("/:bookId", async (c) => {
+  try {
+    const user = c.get("user");
+    const bookId = c.req.param("bookId");
+
+    const book = await getBookByIdQ(bookId);
+
+    // Return an error if the book was not found
+    if (!book) {
+      return c.json(
+        errorResponse("NOT_FOUND", "Book not found."),
+        StatusCodes.NOT_FOUND,
+      );
+    }
+
+    // Delete book
+    await deleteBookByIdForUserQ(book.id, user.id);
+
+    // Delete authors and genres if they no longer have a connected book
+    await deleteOrphanedAuthors();
+    await deleteOrphanedGenres();
+
+    return c.json(
+      successResponse("User's book successfully deleted."),
+      StatusCodes.OK,
+    );
+  } catch (error) {
+    console.error("Error deleting user's book:", error);
+    return c.json(
+      errorResponse("INTERNAL_SERVER_ERROR", "Error deleting user's book."),
+      StatusCodes.INTERNAL_SERVER_ERROR,
+    );
+  }
+});
+
+export default books;

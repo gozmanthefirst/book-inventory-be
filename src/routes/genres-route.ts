@@ -1,12 +1,26 @@
-// External Imports
 import { Hono } from "hono";
+import { StatusCodes } from "http-status-codes";
 
-// Local Imports
-import { getAllGenres } from "../handlers/genres-handler.js";
+import { getAllGenresQ } from "../lib/genres.js";
+import { errorResponse, successResponse } from "../utils/api-response.js";
 
-const genresRouter = new Hono({ strict: false });
+const genres = new Hono({ strict: false });
 
 // Get all genres - GET {/api/v1/genres}/
-genresRouter.get("/", getAllGenres);
+genres.get("/", async (c) => {
+  try {
+    const genres = await getAllGenresQ();
+    return c.json(
+      successResponse("Genres successfully retrieved.", genres),
+      StatusCodes.OK,
+    );
+  } catch (error) {
+    console.error("Error retrieving genres:", error);
+    return c.json(
+      errorResponse("INTERNAL_SERVER_ERROR", "Error retrieving genres."),
+      StatusCodes.INTERNAL_SERVER_ERROR,
+    );
+  }
+});
 
-export default genresRouter;
+export default genres;
