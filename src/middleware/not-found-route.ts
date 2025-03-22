@@ -1,5 +1,3 @@
-// External Imports
-
 import type { NotFoundHandler } from "hono";
 import { StatusCodes } from "http-status-codes";
 

@@ -1,8 +1,8 @@
-// External Imports
-
 import type { ErrorHandler } from "hono";
 import type { ContentfulStatusCode } from "hono/utils/http-status";
 import { StatusCodes } from "http-status-codes";
+
+import { env as typedEnv } from "../config/env";
 
 export const errorHandler: ErrorHandler = (err, c) => {
   console.log(err.stack);
@@ -15,7 +15,7 @@ export const errorHandler: ErrorHandler = (err, c) => {
       ? (currentStatus as ContentfulStatusCode)
       : StatusCodes.INTERNAL_SERVER_ERROR;
 
-  const env = c.env?.NODE_ENV || process.env?.NODE_ENV;
+  const env = c.env?.NODE_ENV || typedEnv.NODE_ENV;
 
   return c.json(
     {
