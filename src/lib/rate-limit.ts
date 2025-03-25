@@ -1,3 +1,4 @@
+import { getConnInfo } from "@hono/node-server/conninfo";
 import { rateLimiter } from "hono-rate-limiter";
 
 export const authRateLimiter = rateLimiter({
@@ -5,7 +6,10 @@ export const authRateLimiter = rateLimiter({
   limit: 5,
   windowMs: 60 * 1000,
   standardHeaders: "draft-7",
-  keyGenerator: (c) => c.req.header("x-forwarded-for") || "unknown",
+  keyGenerator: (c) => {
+    const connInfo = getConnInfo(c);
+    return connInfo.remote.address || "unknown";
+  },
 });
 
 export const emailRateLimiter = rateLimiter({
@@ -13,7 +17,10 @@ export const emailRateLimiter = rateLimiter({
   limit: 3,
   windowMs: 10 * 60 * 1000,
   standardHeaders: "draft-7",
-  keyGenerator: (c) => c.req.header("x-forwarded-for") || "unknown",
+  keyGenerator: (c) => {
+    const connInfo = getConnInfo(c);
+    return connInfo.remote.address || "unknown";
+  },
 });
 
 export const passwordResetLimiter = rateLimiter({
@@ -21,5 +28,8 @@ export const passwordResetLimiter = rateLimiter({
   limit: 3,
   windowMs: 60 * 60 * 1000,
   standardHeaders: "draft-7",
-  keyGenerator: (c) => c.req.header("x-forwarded-for") || "unknown",
+  keyGenerator: (c) => {
+    const connInfo = getConnInfo(c);
+    return connInfo.remote.address || "unknown";
+  },
 });

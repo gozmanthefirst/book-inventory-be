@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import { deleteCookie, getSignedCookie, setSignedCookie } from "hono/cookie";
+import { getConnInfo } from "@hono/node-server/conninfo";
 import { StatusCodes } from "http-status-codes";
 
 import { env } from "../config/env.js";
@@ -254,9 +255,12 @@ auth.post("/login", authRateLimiter, zv("json", loginSchema), async (c) => {
     const expires = new Date();
     expires.setDate(expires.getDate() + 30);
 
+    // Get connection info
+    const connInfo = getConnInfo(c);
+
     // Create session
     const session = await createSession(user, expires, {
-      ipAddress: c.req.header("x-forwarded-for"),
+      ipAddress: connInfo.remote.address,
       userAgent: c.req.header("user-agent"),
     });
 
