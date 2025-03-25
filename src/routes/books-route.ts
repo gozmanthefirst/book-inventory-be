@@ -146,14 +146,18 @@ books.patch("/:bookId", zv("json", updateBookSchema), async (c) => {
     }
 
     // Update book
-    await updateBookReadStatusForUserQ(book.id, user.id, readStatus);
+    const updatedBook = await updateBookReadStatusForUserQ(
+      book.id,
+      user.id,
+      readStatus,
+    );
 
     // Delete authors and genres if they no longer have a connected book
     await deleteOrphanedAuthors();
     await deleteOrphanedGenres();
 
     return c.json(
-      successResponse("User's book successfully updated."),
+      successResponse("User's book successfully updated.", updatedBook),
       StatusCodes.OK,
     );
   } catch (error) {

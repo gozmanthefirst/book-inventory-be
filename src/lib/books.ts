@@ -134,7 +134,7 @@ export const updateBookReadStatusForUserQ = async (
   userId: string,
   readStatus: string,
 ) => {
-  await db.book.update({
+  const book = await db.book.update({
     where: {
       id: bookId,
       userId,
@@ -142,7 +142,13 @@ export const updateBookReadStatusForUserQ = async (
     data: {
       readStatus: (readStatus.toUpperCase() || "UNREAD") as ReadStatus,
     },
+    include: {
+      authors: true,
+      genres: true,
+    },
   });
+
+  return book;
 };
 
 export const deleteBookByIdForUserQ = async (
