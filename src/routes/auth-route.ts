@@ -226,8 +226,8 @@ auth.post("/login", authRateLimiter, zv("json", loginSchema), async (c) => {
     const user = await db.user.findUnique({ where: { email } });
     if (!user || !(await comparePasswords(password, user.passwordHash))) {
       return c.json(
-        errorResponse("INVALID_DATA", "Invalid email or password."),
-        StatusCodes.UNAUTHORIZED,
+        errorResponse("INVALID_CREDENTIALS", "Invalid email or password."),
+        StatusCodes.CONFLICT,
       );
     }
 
