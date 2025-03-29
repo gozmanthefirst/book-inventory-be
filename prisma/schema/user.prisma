@@ -25,6 +25,7 @@ model Session {
 
   @@index([token])
   @@index([ipAddress])
+  @@index([expires])
 }
 
 model PasswordResetToken {
