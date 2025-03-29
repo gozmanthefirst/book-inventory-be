@@ -25,24 +25,34 @@ export const createSession = async (
 };
 
 export const validateSession = async (token: string) => {
-  const session = await db.session.findUnique({
-    where: { token },
-    include: { user: true },
-  });
+  try {
+    const session = await db.session.findUnique({
+      where: { token },
+      include: { user: true },
+    });
 
-  if (!session || session.expires < new Date()) {
-    if (session) {
-      await db.session.delete({ where: { id: session.id } });
+    if (!session) {
+      return null;
     }
-    return null;
+
+    // Check if session has expired
+    if (session.expires < new Date()) {
+      // Delete the expired session
+      await db.session.delete({ where: { id: session.id } });
+      return null;
+    }
+
+    // Update lastUsedAt
+    await db.session.update({
+      where: { id: session.id },
+      data: { lastUsedAt: new Date() },
+    });
+
+    return session;
+  } catch (error) {
+    console.error("Error validating session:", error);
+    throw error;
   }
-
-  await db.session.update({
-    where: { id: session.id },
-    data: { lastUsedAt: new Date() },
-  });
-
-  return session;
 };
 
 export const getCurrentSession = async (token: string) => {
@@ -75,4 +85,37 @@ export const getSuspiciousSessions = async (userId: string) => {
   });
 
   return distinctIPs;
+};
+
+export const cleanupExpiredSessions = async () => {
+  try {
+    const result = await db.session.deleteMany({
+      where: {
+        expires: {
+          lt: new Date(),
+        },
+      },
+    });
+    return result.count;
+  } catch (error) {
+    console.error("Error cleaning up expired sessions:", error);
+    throw error;
+  }
+};
+
+export const getAuthenticatedUser = async (sessionToken: string) => {
+  if (!sessionToken) {
+    return null;
+  }
+
+  try {
+    const session = await validateSession(sessionToken);
+    if (!session) {
+      return null;
+    }
+
+    return session.user;
+  } catch (error) {
+    return null;
+  }
 };

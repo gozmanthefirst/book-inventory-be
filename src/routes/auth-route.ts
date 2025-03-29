@@ -1,9 +1,7 @@
 import { Hono } from "hono";
-import { deleteCookie, getSignedCookie, setSignedCookie } from "hono/cookie";
 import { getConnInfo } from "@hono/node-server/conninfo";
 import { StatusCodes } from "http-status-codes";
 
-import { env } from "../config/env.js";
 import db from "../config/prisma.js";
 import { comparePasswords, hashPassword } from "../lib/auth.js";
 import { sendPasswordResetEmail, sendVerificationEmail } from "../lib/email.js";
@@ -16,7 +14,7 @@ import {
   createPasswordResetToken,
   validatePasswordResetToken,
 } from "../lib/reset-password.js";
-import { createSession } from "../lib/session.js";
+import { createSession, validateSession } from "../lib/session.js";
 import {
   createVerificationToken,
   validateVerificationToken,
@@ -209,18 +207,6 @@ auth.post(
 //* POST /auth/login
 auth.post("/login", authRateLimiter, zv("json", loginSchema), async (c) => {
   try {
-    // Delete any existing session
-    const existingToken = await getSignedCookie(
-      c,
-      env.COOKIE_SECRET,
-      env.AUTH_COOKIE,
-    );
-
-    if (existingToken) {
-      await db.session.delete({ where: { token: existingToken } });
-      deleteCookie(c, env.AUTH_COOKIE);
-    }
-
     const { email, password } = c.req.valid("json");
 
     const user = await db.user.findUnique({ where: { email } });
@@ -264,22 +250,6 @@ auth.post("/login", authRateLimiter, zv("json", loginSchema), async (c) => {
       userAgent: c.req.header("user-agent"),
     });
 
-    // Set session token in HTTP-only cookie
-    await setSignedCookie(
-      c,
-      env.AUTH_COOKIE,
-      session.token,
-      env.COOKIE_SECRET,
-      {
-        path: "/",
-        secure: env.NODE_ENV === "production",
-        domain: env.NODE_ENV === "production" ? "your-domain.com" : undefined,
-        httpOnly: true,
-        expires,
-        sameSite: "Strict",
-      },
-    );
-
     return c.json(
       successResponse("Login successful.", {
         user: {
@@ -287,6 +257,7 @@ auth.post("/login", authRateLimiter, zv("json", loginSchema), async (c) => {
           email: user.email,
           name: user.name,
         },
+        sessionToken: session.token,
       }),
       StatusCodes.OK,
     );
@@ -387,9 +358,6 @@ auth.post(
         }),
       ]);
 
-      // Delete cookie
-      deleteCookie(c, env.AUTH_COOKIE);
-
       return c.json(
         successResponse(
           "Password reset successful. Please login with your new password.",
@@ -410,18 +378,14 @@ auth.post(
 //* POST /auth/logout
 auth.post("/logout", async (c) => {
   try {
-    const sessionToken = await getSignedCookie(
-      c,
-      env.COOKIE_SECRET,
-      env.AUTH_COOKIE,
-    );
+    const authHeader = c.req.header("Authorization");
+    const sessionToken = authHeader?.startsWith("Bearer ")
+      ? authHeader.substring(7)
+      : null;
 
     if (sessionToken) {
       // Delete session from database
       await db.session.delete({ where: { token: sessionToken } });
-
-      // Clear session cookie
-      deleteCookie(c, env.AUTH_COOKIE);
     }
 
     return c.json(successResponse("Logged out successfully."), StatusCodes.OK);
@@ -430,6 +394,49 @@ auth.post("/logout", async (c) => {
     return c.json(
       errorResponse("INTERNAL_SERVER_ERROR", "Error during logout."),
       StatusCodes.INTERNAL_SERVER_ERROR,
+    );
+  }
+});
+
+//* Validate session
+//* GET /auth/validate
+auth.get("/validate", async (c) => {
+  try {
+    const authHeader = c.req.header("Authorization");
+    const sessionToken = authHeader?.startsWith("Bearer ")
+      ? authHeader.substring(7)
+      : null;
+
+    if (!sessionToken) {
+      return c.json(
+        errorResponse("UNAUTHENTICATED", "No session found"),
+        StatusCodes.UNAUTHORIZED,
+      );
+    }
+
+    const session = await validateSession(sessionToken);
+
+    if (!session) {
+      return c.json(
+        errorResponse("UNAUTHENTICATED", "Session expired"),
+        StatusCodes.UNAUTHORIZED,
+      );
+    }
+
+    return c.json(
+      successResponse("Session valid", {
+        user: {
+          id: session.user.id,
+          email: session.user.email,
+          name: session.user.name,
+        },
+      }),
+      StatusCodes.OK,
+    );
+  } catch (error) {
+    return c.json(
+      errorResponse("UNAUTHENTICATED", "Invalid session"),
+      StatusCodes.UNAUTHORIZED,
     );
   }
 });

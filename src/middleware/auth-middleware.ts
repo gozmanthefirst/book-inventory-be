@@ -1,17 +1,14 @@
-import { deleteCookie, getSignedCookie } from "hono/cookie";
 import { createMiddleware } from "hono/factory";
 import { StatusCodes } from "http-status-codes";
 
-import { env } from "../config/env.js";
 import { validateSession } from "../lib/session.js";
 import { errorResponse } from "../utils/api-response.js";
 
 export const authMiddleware = createMiddleware(async (c, next) => {
-  const sessionToken = await getSignedCookie(
-    c,
-    env.COOKIE_SECRET,
-    env.AUTH_COOKIE,
-  );
+  const authHeader = c.req.header("Authorization");
+  const sessionToken = authHeader?.startsWith("Bearer ")
+    ? authHeader.substring(7)
+    : null;
 
   if (!sessionToken) {
     return c.json(
@@ -24,9 +21,6 @@ export const authMiddleware = createMiddleware(async (c, next) => {
     const session = await validateSession(sessionToken);
 
     if (!session) {
-      // Clear invalid session cookie
-      deleteCookie(c, env.AUTH_COOKIE);
-
       return c.json(
         errorResponse("UNAUTHENTICATED", "Session expired"),
         StatusCodes.UNAUTHORIZED,
