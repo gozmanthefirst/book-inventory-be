@@ -7,6 +7,7 @@ import { secureHeaders } from "hono/secure-headers";
 import { serve } from "@hono/node-server";
 
 import { env } from "./config/env.js";
+import { cleanupExpiredSessions } from "./lib/session.js";
 import { authMiddleware } from "./middleware/auth-middleware.js";
 import { errorHandler } from "./middleware/error-handler.js";
 import { notFoundRoute } from "./middleware/not-found-route.js";
@@ -87,3 +88,17 @@ serve(
 if (env.NODE_ENV === "development") {
   console.log(`mode: ${env.NODE_ENV}`);
 }
+
+// Run cleanup every hour
+const CLEANUP_INTERVAL = 1000 * 60 * 60;
+
+setInterval(async () => {
+  try {
+    const deletedCount = await cleanupExpiredSessions();
+    if (deletedCount > 0) {
+      console.log(`Cleaned up ${deletedCount} expired sessions`);
+    }
+  } catch (error) {
+    console.error("Session cleanup failed:", error);
+  }
+}, CLEANUP_INTERVAL);
