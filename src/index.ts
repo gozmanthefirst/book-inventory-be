@@ -1,7 +1,6 @@
 import { Hono } from "hono";
 import { compress } from "hono/compress";
 import { cors } from "hono/cors";
-import { csrf } from "hono/csrf";
 import { logger } from "hono/logger";
 import { secureHeaders } from "hono/secure-headers";
 import { serve } from "@hono/node-server";
@@ -33,11 +32,11 @@ app.use(
 );
 
 // CSRF Protection
-app.use(
-  csrf({
-    origin: ["https://books.gozman.dev", "http://localhost:3000"],
-  }),
-);
+// app.use(
+//   csrf({
+//     origin: ["https://books.gozman.dev", "http://localhost:3000"],
+//   }),
+// );
 
 // Security Headers
 app.use(

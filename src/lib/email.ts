@@ -15,7 +15,7 @@ export const sendVerificationEmail = async ({
   name,
   token,
 }: SendEmailVerificationParams) => {
-  const verificationUrl = `${env.FRONTEND_URL}/auth/verify-email?token=${token}`;
+  const verificationUrl = `${env.FRONTEND_URL}/verify-email?token=${token}`;
 
   await resend.emails.send({
     from: "Book Inventory <book@gozman.dev>",

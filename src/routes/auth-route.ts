@@ -258,6 +258,7 @@ auth.post("/login", authRateLimiter, zv("json", loginSchema), async (c) => {
           name: user.name,
         },
         sessionToken: session.token,
+        sessionExpires: session.expires,
       }),
       StatusCodes.OK,
     );
@@ -442,18 +443,3 @@ auth.get("/validate", async (c) => {
 });
 
 export default auth;
-
-// await setSignedCookie(
-//       c,
-//       env.AUTH_COOKIE,
-//       session.token,
-//       env.COOKIE_SECRET,
-//       {
-//         path: "/",
-//         secure: env.NODE_ENV === "production",
-//         domain: env.NODE_ENV === "production" ? "your-domain.com" : undefined,
-//         httpOnly: true,
-//         expires,
-//         sameSite: "Strict",
-//       },
-//     )
