@@ -41,7 +41,7 @@ export const sendPasswordResetEmail = async ({
   name,
   token,
 }: SendPasswordResetEmailParams) => {
-  const resetUrl = `${env.FRONTEND_URL}/auth/reset-password?token=${token}`;
+  const resetUrl = `${env.FRONTEND_URL}/reset-password?token=${token}`;
 
   await resend.emails.send({
     from: "Book Inventory <book@gozman.dev>",
