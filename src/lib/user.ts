@@ -1,4 +1,4 @@
-import db from "../config/prisma.js";
+import db from "@/config/prisma";
 
 export const getUserByIdQ = async (id: string) => {
   const user = await db.user.findUnique({

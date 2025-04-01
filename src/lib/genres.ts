@@ -1,4 +1,4 @@
-import db from "../config/prisma.js";
+import db from "@/config/prisma";
 
 export const getAllGenresQ = async () => {
   const genres = await db.genre.findMany({

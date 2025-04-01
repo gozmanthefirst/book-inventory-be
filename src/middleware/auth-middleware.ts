@@ -1,8 +1,8 @@
 import { createMiddleware } from "hono/factory";
 import { StatusCodes } from "http-status-codes";
 
-import { validateSession } from "../lib/session.js";
-import { errorResponse } from "../utils/api-response.js";
+import { validateSession } from "@/lib/session";
+import { errorResponse } from "@/utils/api-response";
 
 export const authMiddleware = createMiddleware(async (c, next) => {
   const authHeader = c.req.header("Authorization");

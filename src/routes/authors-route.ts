@@ -1,8 +1,8 @@
 import { Hono } from "hono";
 import { StatusCodes } from "http-status-codes";
 
-import { getAllAuthorsQ } from "../lib/authors.js";
-import { errorResponse, successResponse } from "../utils/api-response.js";
+import { getAllAuthorsQ } from "@/lib/authors";
+import { errorResponse, successResponse } from "@/utils/api-response";
 
 const authors = new Hono({ strict: false });
 

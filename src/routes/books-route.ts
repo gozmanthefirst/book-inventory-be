@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { StatusCodes } from "http-status-codes";
 
-import { deleteOrphanedAuthors } from "../lib/authors.js";
+import { deleteOrphanedAuthors } from "@/lib/authors";
 import {
   createNewBookForUserQ,
   deleteBookByIdForUserQ,
@@ -10,14 +10,14 @@ import {
   getBookByIdQ,
   getBookByIsbnForUserQ,
   updateBookReadStatusForUserQ,
-} from "../lib/books.js";
-import { deleteOrphanedGenres } from "../lib/genres.js";
-import { zv } from "../middleware/validator.js";
-import { errorResponse, successResponse } from "../utils/api-response.js";
+} from "@/lib/books";
+import { deleteOrphanedGenres } from "@/lib/genres";
+import { zv } from "@/middleware/validator";
+import { errorResponse, successResponse } from "@/utils/api-response";
 import {
   createBookSchema,
   updateBookSchema,
-} from "../validators/books-validator.js";
+} from "@/validators/books-validator";
 
 const books = new Hono({ strict: false });
 

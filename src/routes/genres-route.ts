@@ -1,8 +1,8 @@
 import { Hono } from "hono";
 import { StatusCodes } from "http-status-codes";
 
-import { getAllGenresQ } from "../lib/genres.js";
-import { errorResponse, successResponse } from "../utils/api-response.js";
+import { getAllGenresQ } from "@/lib/genres";
+import { errorResponse, successResponse } from "@/utils/api-response";
 
 const genres = new Hono({ strict: false });
 

@@ -2,7 +2,7 @@ import { randomBytes } from "crypto";
 
 import type { User } from "@prisma/client";
 
-import db from "../config/prisma.js";
+import db from "@/config/prisma";
 
 export const createSession = async (
   user: User,

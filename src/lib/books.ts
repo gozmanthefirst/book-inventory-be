@@ -1,6 +1,6 @@
 import type { ReadStatus } from "@prisma/client";
 
-import db from "../config/prisma.js";
+import db from "@/config/prisma";
 
 export const getAllBooksQ = async () => {
   const books = await db.book.findMany({

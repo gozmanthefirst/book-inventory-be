@@ -2,32 +2,32 @@ import { Hono } from "hono";
 import { getConnInfo } from "@hono/node-server/conninfo";
 import { StatusCodes } from "http-status-codes";
 
-import db from "../config/prisma.js";
-import { comparePasswords, hashPassword } from "../lib/auth.js";
-import { sendPasswordResetEmail, sendVerificationEmail } from "../lib/email.js";
+import db from "@/config/prisma";
+import { comparePasswords, hashPassword } from "@/lib/auth";
+import { sendPasswordResetEmail, sendVerificationEmail } from "@/lib/email";
 import {
   authRateLimiter,
   emailRateLimiter,
   passwordResetLimiter,
-} from "../lib/rate-limit";
+} from "@/lib/rate-limit";
 import {
   createPasswordResetToken,
   validatePasswordResetToken,
-} from "../lib/reset-password.js";
-import { createSession, validateSession } from "../lib/session.js";
+} from "@/lib/reset-password";
+import { createSession, validateSession } from "@/lib/session";
 import {
   createVerificationToken,
   validateVerificationToken,
-} from "../lib/verification.js";
-import { zv } from "../middleware/validator.js";
-import { errorResponse, successResponse } from "../utils/api-response.js";
+} from "@/lib/verification";
+import { zv } from "@/middleware/validator";
+import { errorResponse, successResponse } from "@/utils/api-response";
 import {
   loginSchema,
   requestPasswordResetSchema,
   resendVerificationSchema,
   resetPasswordSchema,
   signUpSchema,
-} from "../validators/auth-validator.js";
+} from "@/validators/auth-validator";
 
 const auth = new Hono({ strict: false });
 

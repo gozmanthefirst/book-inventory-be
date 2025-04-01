@@ -2,7 +2,7 @@ import { randomBytes } from "crypto";
 
 import type { User } from "@prisma/client";
 
-import db from "../config/prisma.js";
+import db from "@/config/prisma";
 
 export async function createVerificationToken(user: User) {
   const token = randomBytes(32).toString("hex");

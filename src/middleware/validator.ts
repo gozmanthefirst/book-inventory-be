@@ -3,7 +3,7 @@ import { zValidator } from "@hono/zod-validator";
 import { StatusCodes } from "http-status-codes";
 import { ZodSchema } from "zod";
 
-import { errorResponse } from "../utils/api-response.js";
+import { errorResponse } from "@/utils/api-response";
 
 export const zv = <T extends ZodSchema, Target extends keyof ValidationTargets>(
   target: Target,

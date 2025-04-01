@@ -1,8 +1,8 @@
 import { Hono } from "hono";
 import { StatusCodes } from "http-status-codes";
 
-import db from "../config/prisma.js";
-import { errorResponse, successResponse } from "../utils/api-response.js";
+import db from "@/config/prisma";
+import { errorResponse, successResponse } from "@/utils/api-response";
 
 const user = new Hono({ strict: false });
 

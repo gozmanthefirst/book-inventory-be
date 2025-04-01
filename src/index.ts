@@ -5,18 +5,18 @@ import { logger } from "hono/logger";
 import { secureHeaders } from "hono/secure-headers";
 import { serve } from "@hono/node-server";
 
-import { env } from "./config/env.js";
-import { cleanupExpiredSessions } from "./lib/session.js";
-import { authMiddleware } from "./middleware/auth-middleware.js";
-import { errorHandler } from "./middleware/error-handler.js";
-import { notFoundRoute } from "./middleware/not-found-route.js";
-import auth from "./routes/auth-route.js";
-import authors from "./routes/authors-route.js";
-import books from "./routes/books-route.js";
-import genres from "./routes/genres-route.js";
-import user from "./routes/user-route.js";
+import { env } from "@/config/env";
+import { cleanupExpiredSessions } from "@/lib/session";
+import { authMiddleware } from "@/middleware/auth-middleware";
+import { errorHandler } from "@/middleware/error-handler";
+import { notFoundRoute } from "@/middleware/not-found-route";
+import auth from "@/routes/auth-route";
+import authors from "@/routes/authors-route";
+import books from "@/routes/books-route";
+import genres from "@/routes/genres-route";
+import user from "@/routes/user-route";
 
-import "./types.js";
+import "@/types";
 
 // Initialize app
 const app = new Hono({ strict: false });
