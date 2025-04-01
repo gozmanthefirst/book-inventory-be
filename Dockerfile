@@ -7,10 +7,11 @@ RUN apk add --no-cache gcompat
 # Set up the application directory
 WORKDIR /app
 
-# Copy only the files needed for installation
-COPY pnpm-lock.yaml package.json tsconfig.json src .env ./
+# Copy package files first (for better caching)
+COPY pnpm-lock.yaml package.json tsconfig.json .env ./
 
-# Copy the Prisma directory to allow for `pnpm exec prisma generate`
+# Copy source code and prisma while preserving directory structure
+COPY src ./src
 COPY prisma ./prisma
 
 # Install dependencies and build application
