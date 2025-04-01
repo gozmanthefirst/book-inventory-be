@@ -7,9 +7,17 @@
     "verbatimModuleSyntax": true,
     "skipLibCheck": true,
     "types": ["node"],
+    "typeRoots": ["./node_modules/@types"],
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx",
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
-  "exclude": ["node_modules"]
+  "tsc-alias": {
+    "resolveFullPaths": true
+  }
+  // "exclude": ["node_modules"]
 }
