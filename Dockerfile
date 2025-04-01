@@ -10,13 +10,13 @@ WORKDIR /app
 # Copy only the files needed for installation
 COPY pnpm-lock.yaml package.json tsconfig.json src .env ./
 
-# Copy the Prisma directory to allow for `pnpm dlx prisma generate`
+# Copy the Prisma directory to allow for `pnpm exec prisma generate`
 COPY prisma ./prisma
 
 # Install dependencies and build application
 RUN npm install -g pnpm && \
     pnpm install --frozen-lockfile && \
-    pnpm dlx prisma generate && \
+    pnpm exec prisma generate && \
     pnpm build && \
     pnpm prune --prod
 
